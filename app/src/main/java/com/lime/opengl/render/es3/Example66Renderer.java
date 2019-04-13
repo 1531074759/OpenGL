@@ -37,7 +37,7 @@
 //
 //
 
-package com.lime.opengl.render;
+package com.lime.opengl.render.es3;
 
 import android.content.Context;
 import android.opengl.GLES30;

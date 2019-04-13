@@ -30,7 +30,7 @@
 //            http://my.safaribooksonline.com/book/animation-and-3d/9780133440133
 //
 
-package com.lime.opengl.render;
+package com.lime.opengl.render.es3;
 
 import android.content.Context;
 import android.opengl.GLES30;

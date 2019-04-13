@@ -2,7 +2,6 @@ package com.lime.opengl;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -30,7 +29,7 @@ public class RecycleAdapter extends RecyclerView.Adapter {
         holder.title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, GlActivity.class);
+                Intent intent = new Intent(mContext, (mContext instanceof GL2ItemsActivity ? Gl2Activity.class : Gl3Activity.class));
                 intent.putExtra(Intent.EXTRA_TEXT, mDatas.get(i));
                 mContext.startActivity(intent);
             }

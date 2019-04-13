@@ -10,11 +10,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.lime.opengl.utils.Utils;
+
 import java.lang.reflect.Constructor;
 
-public class GlActivity extends Activity {
+public class Gl3Activity extends Activity {
 
-    private static final String TAG = GlActivity.class.getSimpleName();
+    private static final String TAG = Gl3Activity.class.getSimpleName();
     private final int CONTEXT_CLIENT_VERSION = 3;
 
     @Override
@@ -27,7 +29,7 @@ public class GlActivity extends Activity {
             finish();
             return;
         }
-        GLSurfaceView.Renderer render = createRender(name);
+        GLSurfaceView.Renderer render = Utils.createRender(name, Gl3Activity.this);
         if (render == null) {
             finish();
             return;
@@ -42,18 +44,6 @@ public class GlActivity extends Activity {
             finish();
         }
         setContentView(mGLSurfaceView);
-    }
-
-    private GLSurfaceView.Renderer createRender(String name) {
-        GLSurfaceView.Renderer render = null;
-        try {
-            Class clazz = Class.forName(name);
-            Constructor constroctor = clazz.getConstructor(Context.class);
-            render = (GLSurfaceView.Renderer) constroctor.newInstance(GlActivity.this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return render;
     }
 
     private boolean detectOpenGLES30() {

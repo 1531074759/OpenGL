@@ -37,7 +37,7 @@
 //    example is to demonstrate the basic concepts of
 //    OpenGL ES 3.0 rendering.
 
-package com.lime.opengl.render;
+package com.lime.opengl.render.es3;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

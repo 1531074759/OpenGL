@@ -28,13 +28,15 @@
 // Publisher: Addison-Wesley Professional
 // URLs:      http://www.opengles-book.com
 //            http://my.safaribooksonline.com/book/animation-and-3d/9780133440133
-
-// MapBuffers
-//
-//    This example demonstrates mapping buffer objects
 //
 
-package com.lime.opengl.render;
+// VertexArrayObjects
+//
+//    This is a simple example drawing a primitive with
+//    Vertex Array Objects (VAOs)
+//
+
+package com.lime.opengl.render.es3;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -50,14 +52,22 @@ import android.opengl.GLSurfaceView;
 
 import com.lime.common.ESShader;
 
-public class MapBuffersRenderer implements GLSurfaceView.Renderer {
+public class VAORenderer implements GLSurfaceView.Renderer {
 
     private Context mContext;
+
     ///
     // Constructor
     //
-    public MapBuffersRenderer(Context context) {
+    public VAORenderer(Context context) {
         mContext = context;
+        mVertices = ByteBuffer.allocateDirect(mVerticesData.length * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mVertices.put(mVerticesData).position(0);
+
+        mIndices = ByteBuffer.allocateDirect(mIndicesData.length * 2)
+                .order(ByteOrder.nativeOrder()).asShortBuffer();
+        mIndices.put(mIndicesData).position(0);
     }
 
     ///
@@ -66,11 +76,48 @@ public class MapBuffersRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config) {
         String vShaderStr = ESShader.readShader(mContext, "chapter66/vertexShader.vert");
         String fShaderStr = ESShader.readShader(mContext, "chapter66/fragmentShader.frag");
+
         // Load the shaders and get a linked program object
         mProgramObject = ESShader.loadProgram(vShaderStr, fShaderStr);
 
-        mVBOIds[0] = 0;
-        mVBOIds[1] = 0;
+        // Generate VBO Ids and load the VBOs with data
+        GLES30.glGenBuffers(2, mVBOIds, 0);
+
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, mVBOIds[0]);
+
+        mVertices.position(0);
+        GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, mVerticesData.length * 4,
+                mVertices, GLES30.GL_STATIC_DRAW);
+
+        GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, mVBOIds[1]);
+
+        mIndices.position(0);
+        GLES30.glBufferData(GLES30.GL_ELEMENT_ARRAY_BUFFER, 2 * mIndicesData.length,
+                mIndices, GLES30.GL_STATIC_DRAW);
+
+        // Generate VAO Id
+        GLES30.glGenVertexArrays(1, mVAOId, 0);
+
+        // Bind the VAO and then setup the vertex
+        // attributes
+        GLES30.glBindVertexArray(mVAOId[0]);
+
+        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, mVBOIds[0]);
+        GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, mVBOIds[1]);
+
+        GLES30.glEnableVertexAttribArray(VERTEX_POS_INDX);
+        GLES30.glEnableVertexAttribArray(VERTEX_COLOR_INDX);
+
+        GLES30.glVertexAttribPointer(VERTEX_POS_INDX, VERTEX_POS_SIZE,
+                GLES30.GL_FLOAT, false, VERTEX_STRIDE,
+                0);
+
+        GLES30.glVertexAttribPointer(VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE,
+                GLES30.GL_FLOAT, false, VERTEX_STRIDE,
+                (VERTEX_POS_SIZE * 4));
+
+        // Reset to the default VAO
+        GLES30.glBindVertexArray(0);
 
         GLES30.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
     }
@@ -88,76 +135,14 @@ public class MapBuffersRenderer implements GLSurfaceView.Renderer {
         // Use the program object
         GLES30.glUseProgram(mProgramObject);
 
-        drawPrimitiveWithVBOsMapBuffers();
-    }
+        // Bind the VAO
+        GLES30.glBindVertexArray(mVAOId[0]);
 
-    private void drawPrimitiveWithVBOsMapBuffers() {
-        int offset = 0;
-        int numVertices = 3;
-        int numIndices = 3;
-        int vtxStride = 4 * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE);
+        // Draw with the VAO settings
+        GLES30.glDrawElements(GLES30.GL_TRIANGLES, mIndicesData.length, GLES30.GL_UNSIGNED_SHORT, 0);
 
-        // mVBOIds[0] - used to store vertex attribute data
-        // mVBOIds[l] - used to store element indices
-        if (mVBOIds[0] == 0 && mVBOIds[1] == 0) {
-            // Only allocate on the first draw
-            GLES30.glGenBuffers(2, mVBOIds, 0);
-
-            GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, mVBOIds[0]);
-            GLES30.glBufferData(GLES30.GL_ARRAY_BUFFER, vtxStride * numVertices,
-                    null, GLES30.GL_STATIC_DRAW);
-            vtxMappedBuf =
-                    ((ByteBuffer) GLES30.glMapBufferRange(
-                            GLES30.GL_ARRAY_BUFFER, 0, vtxStride * numVertices,
-                            GLES30.GL_MAP_WRITE_BIT | GLES30.GL_MAP_INVALIDATE_BUFFER_BIT)
-                    ).order(ByteOrder.nativeOrder()).asFloatBuffer();
-
-            // Copy the data into the mapped buffer
-            vtxMappedBuf.put(mVerticesData).position(0);
-
-            // Unamp the buffer
-            GLES30.glUnmapBuffer(GLES30.GL_ARRAY_BUFFER);
-
-            // Map the index buffer
-            GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, mVBOIds[1]);
-            GLES30.glBufferData(GLES30.GL_ELEMENT_ARRAY_BUFFER, 2 * numIndices,
-                    null, GLES30.GL_STATIC_DRAW);
-            idxMappedBuf =
-                    ((ByteBuffer) GLES30.glMapBufferRange(
-                            GLES30.GL_ELEMENT_ARRAY_BUFFER, 0, 2 * numIndices,
-                            GLES30.GL_MAP_WRITE_BIT | GLES30.GL_MAP_INVALIDATE_BUFFER_BIT)
-                    ).order(ByteOrder.nativeOrder()).asShortBuffer();
-
-            // Copy the data into the mapped buffer
-            idxMappedBuf.put(mIndicesData).position(0);
-
-            // Unamp the buffer
-            GLES30.glUnmapBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER);
-        }
-
-        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, mVBOIds[0]);
-
-        GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, mVBOIds[1]);
-
-        GLES30.glEnableVertexAttribArray(VERTEX_POS_INDX);
-        GLES30.glEnableVertexAttribArray(VERTEX_COLOR_INDX);
-
-        GLES30.glVertexAttribPointer(VERTEX_POS_INDX, VERTEX_POS_SIZE,
-                GLES30.GL_FLOAT, false, vtxStride, offset);
-
-        offset += (VERTEX_POS_SIZE * 4);
-
-        GLES30.glVertexAttribPointer(VERTEX_COLOR_INDX, VERTEX_COLOR_SIZE,
-                GLES30.GL_FLOAT, false, vtxStride, offset);
-
-        GLES30.glDrawElements(GLES30.GL_TRIANGLES, numIndices,
-                GLES30.GL_UNSIGNED_SHORT, 0);
-
-        GLES30.glDisableVertexAttribArray(VERTEX_POS_INDX);
-        GLES30.glDisableVertexAttribArray(VERTEX_COLOR_INDX);
-
-        GLES30.glBindBuffer(GLES30.GL_ARRAY_BUFFER, 0);
-        GLES30.glBindBuffer(GLES30.GL_ELEMENT_ARRAY_BUFFER, 0);
+        // Return to the default VAO
+        GLES30.glBindVertexArray(0);
     }
 
     ///
@@ -174,12 +159,14 @@ public class MapBuffersRenderer implements GLSurfaceView.Renderer {
     // Additional member variables
     private int mWidth;
     private int mHeight;
-
-    private FloatBuffer vtxMappedBuf;
-    private ShortBuffer idxMappedBuf;
+    private FloatBuffer mVertices;
+    private ShortBuffer mIndices;
 
     // VertexBufferObject Ids
     private int[] mVBOIds = new int[2];
+
+    // VertexArrayObject Id
+    private int[] mVAOId = new int[1];
 
     // 3 vertices, with (x,y,z) ,(r, g, b, a) per-vertex
     private final float[] mVerticesData =
@@ -202,4 +189,6 @@ public class MapBuffersRenderer implements GLSurfaceView.Renderer {
 
     final int VERTEX_POS_INDX = 0;
     final int VERTEX_COLOR_INDX = 1;
+
+    final int VERTEX_STRIDE = (4 * (VERTEX_POS_SIZE + VERTEX_COLOR_SIZE));
 }

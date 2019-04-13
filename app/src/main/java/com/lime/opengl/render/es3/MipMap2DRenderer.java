@@ -30,19 +30,13 @@
 //            http://my.safaribooksonline.com/book/animation-and-3d/9780133440133
 //
 
-// TextureWrap
+// MipMap2D
 //
-//    This is an example that demonstrates the three texture
-//    wrap modes available on 2D textures
+//    This is a simple example that demonstrates generating a mipmap chain
+//    and rendering with it
 //
 
-package com.lime.opengl.render;
-
-import android.content.Context;
-import android.opengl.GLES30;
-import android.opengl.GLSurfaceView;
-
-import com.lime.common.ESShader;
+package com.lime.opengl.render.es3;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -52,15 +46,22 @@ import java.nio.ShortBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class TextureWrapRenderer implements GLSurfaceView.Renderer {
+import android.content.Context;
+import android.opengl.GLES30;
+import android.opengl.GLSurfaceView;
+
+import com.lime.common.ESShader;
+
+public class MipMap2DRenderer implements GLSurfaceView.Renderer {
 
     private Context mContext;
 
     ///
     // Constructor
     //
-    public TextureWrapRenderer(Context context) {
+    public MipMap2DRenderer(Context context) {
         mContext = context;
+
         mVertices = ByteBuffer.allocateDirect(mVerticesData.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mVertices.put(mVerticesData).position(0);
@@ -70,9 +71,60 @@ public class TextureWrapRenderer implements GLSurfaceView.Renderer {
     }
 
     ///
+    //  From an RGB8 source image, generate the next level mipmap
+    //
+    private byte[] genMipMap2D(byte[] src, int srcWidth, int srcHeight, int dstWidth, int dstHeight) {
+        int x,
+                y;
+        int texelSize = 3;
+
+        byte[] dst = new byte[texelSize * (dstWidth) * (dstHeight)];
+
+        for (y = 0; y < dstHeight; y++) {
+            for (x = 0; x < dstWidth; x++) {
+                int[] srcIndex = new int[4];
+                float r = 0.0f,
+                        g = 0.0f,
+                        b = 0.0f;
+                int sample;
+
+                // Compute the offsets for 2x2 grid of pixels in previous
+                // image to perform box filter
+                srcIndex[0] =
+                        (((y * 2) * srcWidth) + (x * 2)) * texelSize;
+                srcIndex[1] =
+                        (((y * 2) * srcWidth) + (x * 2 + 1)) * texelSize;
+                srcIndex[2] =
+                        ((((y * 2) + 1) * srcWidth) + (x * 2)) * texelSize;
+                srcIndex[3] =
+                        ((((y * 2) + 1) * srcWidth) + (x * 2 + 1)) * texelSize;
+
+                // Sum all pixels
+                for (sample = 0; sample < 4; sample++) {
+                    r += src[srcIndex[sample]];
+                    g += src[srcIndex[sample] + 1];
+                    b += src[srcIndex[sample] + 2];
+                }
+
+                // Average results
+                r /= 4.0;
+                g /= 4.0;
+                b /= 4.0;
+
+                // Store resulting pixels
+                dst[(y * (dstWidth) + x) * texelSize] = (byte) (r);
+                dst[(y * (dstWidth) + x) * texelSize + 1] = (byte) (g);
+                dst[(y * (dstWidth) + x) * texelSize + 2] = (byte) (b);
+            }
+        }
+
+        return dst;
+    }
+
+    ///
     //  Generate an RGB8 checkerboard image
     //
-    private ByteBuffer genCheckImage(int width, int height, int checkSize) {
+    private byte[] genCheckImage(int width, int height, int checkSize) {
         int x,
                 y;
         byte[] pixels = new byte[width * height * 3];
@@ -96,22 +148,24 @@ public class TextureWrapRenderer implements GLSurfaceView.Renderer {
                 pixels[(y * width + x) * 3 + 2] = bColor;
             }
 
-        ByteBuffer result = ByteBuffer.allocateDirect(width * height * 3);
-        result.put(pixels).position(0);
-        return result;
+        return pixels;
     }
 
+
     ///
-    // Create a 2D texture image
+    // Create a mipmapped 2D texture image
     //
-    private int createTexture2D() {
+    private int createMipMappedTexture2D() {
         // Texture object handle
         int[] textureId = new int[1];
         int width = 256,
                 height = 256;
-        ByteBuffer pixels;
+        int level;
+        byte[] pixels;
+        byte[] prevImage;
+        byte[] newImage;
 
-        pixels = genCheckImage(width, height, 64);
+        pixels = genCheckImage(width, height, 8);
 
         // Generate a texture object
         GLES30.glGenTextures(1, textureId, 0);
@@ -120,14 +174,57 @@ public class TextureWrapRenderer implements GLSurfaceView.Renderer {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId[0]);
 
         // Load mipmap level 0
+        ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(width * height * 3);
+        pixelBuffer.put(pixels).position(0);
+
         GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGB, width, height,
-                0, GLES30.GL_RGB, GLES30.GL_UNSIGNED_BYTE, pixels);
+                0, GLES30.GL_RGB, GLES30.GL_UNSIGNED_BYTE, pixelBuffer);
+
+        level = 1;
+        prevImage = pixels;
+
+        while (width > 1 && height > 1) {
+            int newWidth,
+                    newHeight;
+
+            newWidth = width / 2;
+
+            if (newWidth <= 0) {
+                newWidth = 1;
+            }
+
+            newHeight = height / 2;
+
+            if (newHeight <= 0) {
+                newHeight = 1;
+            }
+
+            // Generate the next mipmap level
+            newImage = genMipMap2D(prevImage, width, height, newWidth, newHeight);
+
+            // Load the mipmap level
+            pixelBuffer = ByteBuffer.allocateDirect(newWidth * newHeight * 3);
+            pixelBuffer.put(newImage).position(0);
+            GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, level, GLES30.GL_RGB,
+                    newWidth, newHeight, 0, GLES30.GL_RGB,
+                    GLES30.GL_UNSIGNED_BYTE, pixelBuffer);
+
+            // Set the previous image for the next iteration
+            prevImage = newImage;
+            level++;
+
+            // Half the width and height
+            width = newWidth;
+            height = newHeight;
+        }
+
 
         // Set the filtering mode
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST_MIPMAP_NEAREST);
         GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
 
         return textureId[0];
+
     }
 
 
@@ -135,11 +232,10 @@ public class TextureWrapRenderer implements GLSurfaceView.Renderer {
     // Initialize the shader and program object
     //
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config) {
-        String vShaderStr = ESShader.readShader(mContext, "chapter9/texturewrap/vertexShader.vert");
-        String fShaderStr = ESShader.readShader(mContext, "chapter9/texturewrap/fragmentShader.frag");
-
-        // Load the shaders and get a linked program object
-        mProgramObject = ESShader.loadProgram(vShaderStr, fShaderStr);
+        // Load the shaders from "assets" and get a linked program object
+        mProgramObject = ESShader.loadProgramFromAsset(mContext,
+                "chapter9/mipmap2d/vertexShader.vert",
+                "chapter9/mipmap2d/fragmentShader.frag");
 
         // Get the sampler location
         mSamplerLoc = GLES30.glGetUniformLocation(mProgramObject, "s_texture");
@@ -148,7 +244,7 @@ public class TextureWrapRenderer implements GLSurfaceView.Renderer {
         mOffsetLoc = GLES30.glGetUniformLocation(mProgramObject, "u_offset");
 
         // Load the texture
-        mTextureId = createTexture2D();
+        mTextureId = createMipMappedTexture2D();
 
         GLES30.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
     }
@@ -188,22 +284,14 @@ public class TextureWrapRenderer implements GLSurfaceView.Renderer {
         // Set the sampler texture unit to 0
         GLES30.glUniform1i(mSamplerLoc, 0);
 
-        // Draw quad with repeat wrap mode
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_REPEAT);
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_REPEAT);
-        GLES30.glUniform1f(mOffsetLoc, -0.7f);
+        // Draw quad with nearest sampling
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST);
+        GLES30.glUniform1f(mOffsetLoc, -0.6f);
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_SHORT, mIndices);
 
-        // Draw quad with clamp to edge wrap mode
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
-        GLES30.glUniform1f(mOffsetLoc, 0.0f);
-        GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_SHORT, mIndices);
-
-        // Draw quad with mirrored repeat
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_MIRRORED_REPEAT);
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_MIRRORED_REPEAT);
-        GLES30.glUniform1f(mOffsetLoc, 0.7f);
+        // Draw quad with trilinear filtering
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR_MIPMAP_LINEAR);
+        GLES30.glUniform1f(mOffsetLoc, 0.6f);
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_SHORT, mIndices);
     }
 
@@ -236,19 +324,18 @@ public class TextureWrapRenderer implements GLSurfaceView.Renderer {
 
     private final float[] mVerticesData =
             {
-                    -0.3f, 0.3f, 0.0f, 1.0f,  // Position 0
-                    -1.0f, -1.0f,              // TexCoord 0
-                    -0.3f, -0.3f, 0.0f, 1.0f, // Position 1
-                    -1.0f, 2.0f,              // TexCoord 1
-                    0.3f, -0.3f, 0.0f, 1.0f, // Position 2
-                    2.0f, 2.0f,              // TexCoord 2
-                    0.3f, 0.3f, 0.0f, 1.0f,  // Position 3
-                    2.0f, -1.0f               // TexCoord 3
+                    -0.5f, 0.5f, 0.0f, 1.5f,  // Position 0
+                    0.0f, 0.0f,              // TexCoord 0
+                    -0.5f, -0.5f, 0.0f, 0.75f, // Position 1
+                    0.0f, 1.0f,              // TexCoord 1
+                    0.5f, -0.5f, 0.0f, 0.75f, // Position 2
+                    1.0f, 1.0f,              // TexCoord 2
+                    0.5f, 0.5f, 0.0f, 1.5f,  // Position 3
+                    1.0f, 0.0f               // TexCoord 3
             };
 
     private final short[] mIndicesData =
             {
                     0, 1, 2, 0, 2, 3
             };
-
 }

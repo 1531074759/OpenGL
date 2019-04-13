@@ -30,14 +30,13 @@
 //            http://my.safaribooksonline.com/book/animation-and-3d/9780133440133
 //
 
-// Simple_Texture2D
+// TextureWrap
 //
-//    This is a simple example that draws a quad with a 2D
-//    texture image. The purpose of this example is to demonstrate
-//    the basics of 2D texturing
+//    This is an example that demonstrates the three texture
+//    wrap modes available on 2D textures
 //
 
-package com.lime.opengl.render;
+package com.lime.opengl.render.es3;
 
 import android.content.Context;
 import android.opengl.GLES30;
@@ -53,14 +52,14 @@ import java.nio.ShortBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class SimpleTexture2DRenderer implements GLSurfaceView.Renderer {
+public class TextureWrapRenderer implements GLSurfaceView.Renderer {
 
     private Context mContext;
 
     ///
     // Constructor
     //
-    public SimpleTexture2DRenderer(Context context) {
+    public TextureWrapRenderer(Context context) {
         mContext = context;
         mVertices = ByteBuffer.allocateDirect(mVerticesData.length * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -70,49 +69,74 @@ public class SimpleTexture2DRenderer implements GLSurfaceView.Renderer {
         mIndices.put(mIndicesData).position(0);
     }
 
+    ///
+    //  Generate an RGB8 checkerboard image
     //
-    // Create a simple 2x2 texture image with four different colors
+    private ByteBuffer genCheckImage(int width, int height, int checkSize) {
+        int x,
+                y;
+        byte[] pixels = new byte[width * height * 3];
+
+
+        for (y = 0; y < height; y++)
+            for (x = 0; x < width; x++) {
+                byte rColor = 0;
+                byte bColor = 0;
+
+                if ((x / checkSize) % 2 == 0) {
+                    rColor = (byte) (127 * ((y / checkSize) % 2));
+                    bColor = (byte) (127 * (1 - ((y / checkSize) % 2)));
+                } else {
+                    bColor = (byte) (127 * ((y / checkSize) % 2));
+                    rColor = (byte) (127 * (1 - ((y / checkSize) % 2)));
+                }
+
+                pixels[(y * width + x) * 3] = rColor;
+                pixels[(y * width + x) * 3 + 1] = 0;
+                pixels[(y * width + x) * 3 + 2] = bColor;
+            }
+
+        ByteBuffer result = ByteBuffer.allocateDirect(width * height * 3);
+        result.put(pixels).position(0);
+        return result;
+    }
+
+    ///
+    // Create a 2D texture image
     //
-    private int createSimpleTexture2D() {
+    private int createTexture2D() {
         // Texture object handle
         int[] textureId = new int[1];
+        int width = 256,
+                height = 256;
+        ByteBuffer pixels;
 
-        // 2x2 Image, 3 bytes per pixel (R, G, B)
-        byte[] pixels =
-                {
-                        (byte) 0xff, 0, 0, // Red
-                        0, (byte) 0xff, 0, // Green
-                        0, 0, (byte) 0xff, // Blue
-                        (byte) 0xff, (byte) 0xff, 0 // Yellow
-                };
-        ByteBuffer pixelBuffer = ByteBuffer.allocateDirect(4 * 3);
-        pixelBuffer.put(pixels).position(0);
+        pixels = genCheckImage(width, height, 64);
 
-        // Use tightly packed data
-        GLES30.glPixelStorei(GLES30.GL_UNPACK_ALIGNMENT, 1);
-
-        //  Generate a texture object
+        // Generate a texture object
         GLES30.glGenTextures(1, textureId, 0);
 
         // Bind the texture object
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textureId[0]);
 
-        //  Load the texture
-        GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGB, 2, 2, 0, GLES30.GL_RGB, GLES30.GL_UNSIGNED_BYTE, pixelBuffer);
+        // Load mipmap level 0
+        GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGB, width, height,
+                0, GLES30.GL_RGB, GLES30.GL_UNSIGNED_BYTE, pixels);
 
         // Set the filtering mode
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST);
-        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_NEAREST);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_LINEAR);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_LINEAR);
 
         return textureId[0];
     }
+
 
     ///
     // Initialize the shader and program object
     //
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config) {
-        String vShaderStr = ESShader.readShader(mContext, "chapter9/texture2d/vertexShader.vert");
-        String fShaderStr = ESShader.readShader(mContext, "chapter9/texture2d/fragmentShader.frag");
+        String vShaderStr = ESShader.readShader(mContext, "chapter9/texturewrap/vertexShader.vert");
+        String fShaderStr = ESShader.readShader(mContext, "chapter9/texturewrap/fragmentShader.frag");
 
         // Load the shaders and get a linked program object
         mProgramObject = ESShader.loadProgram(vShaderStr, fShaderStr);
@@ -120,13 +144,16 @@ public class SimpleTexture2DRenderer implements GLSurfaceView.Renderer {
         // Get the sampler location
         mSamplerLoc = GLES30.glGetUniformLocation(mProgramObject, "s_texture");
 
+        // Get the offset location
+        mOffsetLoc = GLES30.glGetUniformLocation(mProgramObject, "u_offset");
+
         // Load the texture
-        mTextureId = createSimpleTexture2D();
+        mTextureId = createTexture2D();
 
         GLES30.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
     }
 
-    // /
+    ///
     // Draw a triangle using the shader pair created in onSurfaceCreated()
     //
     public void onDrawFrame(GL10 glUnused) {
@@ -141,14 +168,14 @@ public class SimpleTexture2DRenderer implements GLSurfaceView.Renderer {
 
         // Load the vertex position
         mVertices.position(0);
-        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT,
+        GLES30.glVertexAttribPointer(0, 4, GLES30.GL_FLOAT,
                 false,
-                5 * 4, mVertices);
+                6 * 4, mVertices);
         // Load the texture coordinate
-        mVertices.position(3);
+        mVertices.position(4);
         GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT,
                 false,
-                5 * 4,
+                6 * 4,
                 mVertices);
 
         GLES30.glEnableVertexAttribArray(0);
@@ -161,6 +188,22 @@ public class SimpleTexture2DRenderer implements GLSurfaceView.Renderer {
         // Set the sampler texture unit to 0
         GLES30.glUniform1i(mSamplerLoc, 0);
 
+        // Draw quad with repeat wrap mode
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_REPEAT);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_REPEAT);
+        GLES30.glUniform1f(mOffsetLoc, -0.7f);
+        GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_SHORT, mIndices);
+
+        // Draw quad with clamp to edge wrap mode
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+        GLES30.glUniform1f(mOffsetLoc, 0.0f);
+        GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_SHORT, mIndices);
+
+        // Draw quad with mirrored repeat
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_MIRRORED_REPEAT);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_MIRRORED_REPEAT);
+        GLES30.glUniform1f(mOffsetLoc, 0.7f);
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_SHORT, mIndices);
     }
 
@@ -179,6 +222,9 @@ public class SimpleTexture2DRenderer implements GLSurfaceView.Renderer {
     // Sampler location
     private int mSamplerLoc;
 
+    // Offset location
+    private int mOffsetLoc;
+
     // Texture handle
     private int mTextureId;
 
@@ -190,14 +236,14 @@ public class SimpleTexture2DRenderer implements GLSurfaceView.Renderer {
 
     private final float[] mVerticesData =
             {
-                    -0.5f, 0.5f, 0.0f, // Position 0
-                    0.0f, 0.0f, // TexCoord 0
-                    -0.5f, -0.5f, 0.0f, // Position 1
-                    0.0f, 1.0f, // TexCoord 1
-                    0.5f, -0.5f, 0.0f, // Position 2
-                    1.0f, 1.0f, // TexCoord 2
-                    0.5f, 0.5f, 0.0f, // Position 3
-                    1.0f, 0.0f // TexCoord 3
+                    -0.3f, 0.3f, 0.0f, 1.0f,  // Position 0
+                    -1.0f, -1.0f,              // TexCoord 0
+                    -0.3f, -0.3f, 0.0f, 1.0f, // Position 1
+                    -1.0f, 2.0f,              // TexCoord 1
+                    0.3f, -0.3f, 0.0f, 1.0f, // Position 2
+                    2.0f, 2.0f,              // TexCoord 2
+                    0.3f, 0.3f, 0.0f, 1.0f,  // Position 3
+                    2.0f, -1.0f               // TexCoord 3
             };
 
     private final short[] mIndicesData =

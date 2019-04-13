@@ -36,7 +36,7 @@
 //    using a vertex shader to transform the object
 //
 
-package com.lime.opengl.render;
+package com.lime.opengl.render.es3;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
