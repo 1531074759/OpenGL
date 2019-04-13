@@ -8,8 +8,12 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/airhockeytouch" />
+            <option value="$PROJECT_DIR$/airhockeywithimprovedmallets" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/common" />
+            <option value="$PROJECT_DIR$/firstopenglproject" />
+            <option value="$PROJECT_DIR$/heightmap" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
