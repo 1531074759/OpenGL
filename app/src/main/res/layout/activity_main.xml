@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <TextView
+        android:id="@+id/opengl_2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></android.support.v7.widget.RecyclerView>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#846257"
+        android:gravity="center"
+        android:text="Opengl ES 2.0"
+        android:textSize="50sp" />
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:id="@+id/opengl_3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#371268"
+        android:gravity="center"
+        android:text="Opengl ES 3.0"
+        android:textSize="50sp" />
+</LinearLayout>

@@ -17,7 +17,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".GlActivity" />
+        <activity android:name=".GL2ItemsActivity" />
+        <activity android:name=".GL3ItemsActivity" />
+        <activity android:name=".Gl2Activity" />
+        <activity android:name=".Gl3Activity" />
     </application>
 
 </manifest>

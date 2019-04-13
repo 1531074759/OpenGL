@@ -76,8 +76,6 @@ public class Geometry {
         }
     }
 
-    // TODO: Re-use shared stuff in classes as an exercise
-
     public static class Circle {
         public final Point center;
         public final float radius;
