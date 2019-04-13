@@ -17,6 +17,8 @@
             <option value="$PROJECT_DIR$/lighting" />
             <option value="$PROJECT_DIR$/livewallpaper" />
             <option value="$PROJECT_DIR$/particles" />
+            <option value="$PROJECT_DIR$/skybox" />
+            <option value="$PROJECT_DIR$/takingthenextstep" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

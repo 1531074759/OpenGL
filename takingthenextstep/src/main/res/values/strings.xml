@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">TakingTheNextStep</string>
+
+    <string name="textureFilterChooser">Texture Filters</string>
+    <string name="chooseTextureFilter">Choose Texture Filter</string>
+    <string name="noAnisotropicFiltering">Your GPU does not support anisotropic filtering!</string>
+
+    <string-array name="filterChoices">
+        <item>Nearest neighbour</item>
+        <item>Bilinear</item>
+        <item>Bilinear mipmapping</item>
+        <item>Trilinear mipmapping</item>
+        <item>Anisotropic mipmapping</item>
+    </string-array>
+
+    <string name="enableAa">Enable AA</string>
+    <string name="disableAa">Disable AA</string>
+</resources>
