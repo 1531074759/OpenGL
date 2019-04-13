@@ -1,1 +1,1 @@
-include ':app', ':common', ':airhockeytouch', ':airhockeywithimprovedmallets', ':firstopenglproject', ':heightmap'
+include ':app', ':common', ':airhockeytouch', ':airhockeywithimprovedmallets', ':firstopenglproject', ':heightmap', ':lighting'
