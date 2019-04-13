@@ -7,5 +7,10 @@ OpenGL
 后续会不断往上提交其他学习的代码。
 
 
-![login](https://github.com/1531074759/OpenGL/raw/master/screenshots/chapters.png)
+![login](https://github.com/1531074759/OpenGL/raw/master/screenshots/chapters1.png)
+![login](https://github.com/1531074759/OpenGL/raw/master/screenshots/chapters2.png)
+![login](https://github.com/1531074759/OpenGL/raw/master/screenshots/HelloTriangle.png)
+![login](https://github.com/1531074759/OpenGL/raw/master/screenshots/mipmap2d.png)
+![login](https://github.com/1531074759/OpenGL/raw/master/screenshots/MultiTexture.png)
+![login](https://github.com/1531074759/OpenGL/raw/master/screenshots/TextureCubemap.png)
 
