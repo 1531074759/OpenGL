@@ -32,6 +32,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 
 import com.lime.opengl.R;
@@ -109,7 +110,7 @@ public class AirHockey1Renderer implements Renderer {
 
                 // Mallets
                 0f, -0.25f,
-                0f, 0.25f
+                0f, 0.25f,
         };
 
         vertexData = ByteBuffer
@@ -157,8 +158,6 @@ public class AirHockey1Renderer implements Renderer {
         vertexData.position(0);
         glVertexAttribPointer(aPositionLocation, POSITION_COMPONENT_COUNT, GL_FLOAT,
                 false, 0, vertexData);
-
-        glEnableVertexAttribArray(aPositionLocation);
     }
 
     /**
@@ -185,8 +184,10 @@ public class AirHockey1Renderer implements Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glEnableVertexAttribArray(aPositionLocation);
+
         // Draw the table.
-        glUniform4f(uColorLocation, 1.0f, 1.0f, 1.0f, 1.0f);
+        GLES20.glUniform4f(uColorLocation, 1.0f, 1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
         // Draw the center dividing line.
@@ -200,5 +201,7 @@ public class AirHockey1Renderer implements Renderer {
         // Draw the second mallet red.
         glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
         glDrawArrays(GL_POINTS, 9, 1);
+
+        GLES20.glDisableVertexAttribArray(aPositionLocation);
     }
 }

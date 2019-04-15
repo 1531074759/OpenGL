@@ -46,7 +46,6 @@ public class GL2ItemsActivity extends AppCompatActivity {
         items.add(AirHockey2Renderer.class.getName());
         items.add(AirHockey3DRenderer.class.getName());
         items.add(AirHockeyOrthoRenderer.class.getName());
-        items.add(AirHockeyOrthoRenderer.class.getName());
         items.add(AirHockeyTexturedRenderer.class.getName());
         adapter = new RecycleAdapter(GL2ItemsActivity.this, items);
         recyclerView.setAdapter(adapter);
