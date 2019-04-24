@@ -41,8 +41,10 @@ public class Heightmap {
     
     public Heightmap(Bitmap bitmap) {    
         width = bitmap.getWidth();
-        height = bitmap.getHeight(); 
-        
+        height = bitmap.getHeight();
+        if (width * height > 65536) {
+            throw new RuntimeException("Heightmap is too large for the index buffer.");
+        }
         numElements = calculateNumElements();
         vertexBuffer = new VertexBuffer(loadBitmapData(bitmap));        
         indexBuffer = new IndexBuffer(createIndexData());        
