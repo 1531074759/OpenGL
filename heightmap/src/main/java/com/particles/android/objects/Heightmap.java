@@ -16,12 +16,14 @@ import static android.opengl.GLES20.glDrawElements;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.util.Log;
 
 import com.particles.android.data.IndexBuffer;
 import com.particles.android.data.VertexBuffer;
 import com.particles.android.programs.HeightmapShaderProgram;
 
 public class Heightmap {
+    private static final String TAG = Heightmap.class.getSimpleName();
     private static final int POSITION_COMPONENT_COUNT = 3;
 
     private final int width;
@@ -53,6 +55,7 @@ public class Heightmap {
         final float[] heightmapVertices =
                 new float[width * height * POSITION_COMPONENT_COUNT];
         int offset = 0;
+        long start = System.currentTimeMillis();
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 // The heightmap will lie flat on the XZ plane and centered
@@ -70,6 +73,8 @@ public class Heightmap {
                 heightmapVertices[offset++] = zPosition;
             }
         }
+        long end = System.currentTimeMillis();
+        Log.i(TAG, "loadBitmapData cost: " + (end - start));
         return heightmapVertices;
     }
 
