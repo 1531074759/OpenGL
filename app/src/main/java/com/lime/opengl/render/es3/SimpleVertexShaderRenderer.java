@@ -46,6 +46,7 @@ import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 
+import com.lime.common.Cube;
 import com.lime.common.ESShader;
 import com.lime.common.ESShapes;
 import com.lime.common.ESTransform;
@@ -75,7 +76,7 @@ public class SimpleVertexShaderRenderer implements GLSurfaceView.Renderer {
         mMVPLoc = GLES30.glGetUniformLocation(mProgramObject, "u_mvpMatrix");
 
         // Generate the vertex data
-        mCube.genCube(1.0f);
+        mCube.genCube(0.6f);
 
         // Starting rotation angle for the cube
         mAngle = 45.0f;
@@ -172,7 +173,8 @@ public class SimpleVertexShaderRenderer implements GLSurfaceView.Renderer {
     private int mMVPLoc;
 
     // Vertex data
-    private ESShapes mCube = new ESShapes();
+//    private ESShapes mCube = new ESShapes();
+    private Cube mCube = new Cube();
 
     // Rotation angle
     private float mAngle;

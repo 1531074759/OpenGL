@@ -145,6 +145,8 @@ public class HelloTriangleRenderer implements GLSurfaceView.Renderer {
         // Store the program object
         mProgramObject = programObject;
         GLES30.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+        vPosition = GLES30.glGetAttribLocation(mProgramObject, "vPosition");
+        Log.i(TAG, "vPosition: " + vPosition);
     }
 
     // /
@@ -162,8 +164,8 @@ public class HelloTriangleRenderer implements GLSurfaceView.Renderer {
         GLES30.glUseProgram(mProgramObject);
 
         // Load the vertex data
-        GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT, false, 0, mVertices);
-        GLES30.glEnableVertexAttribArray(0);
+        GLES30.glVertexAttribPointer(vPosition, 3, GLES30.GL_FLOAT, false, 0, mVertices);
+        GLES30.glEnableVertexAttribArray(vPosition);
 
         GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 3);
     }
@@ -182,6 +184,7 @@ public class HelloTriangleRenderer implements GLSurfaceView.Renderer {
     private int mWidth;
     private int mHeight;
     private FloatBuffer mVertices;
+    private int vPosition;
     private static String TAG = "HelloTriangleRenderer";
 
     private final float[] mVerticesData =
