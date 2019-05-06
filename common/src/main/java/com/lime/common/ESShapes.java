@@ -45,6 +45,10 @@ import java.nio.ShortBuffer;
 
 public class ESShapes {
 
+    public ESShapes() {
+
+    }
+
     public int genSphere(int numSlices, float radius) {
         int i;
         int j;
@@ -119,14 +123,31 @@ public class ESShapes {
         int numVertices = 24;
         int numIndices = 36;
 
-        float[] cubeVerts = {-0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f, 0.5f,
-                -0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, -0.5f,
-                0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f, -0.5f, -0.5f,
-                -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f,
-                -0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
-                0.5f, -0.5f, 0.5f, -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,
-                -0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f, 0.5f, -0.5f, -0.5f,
-                0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, -0.5f,
+        float[] cubeVerts = {
+                -0.5f, -0.5f, -0.5f,
+                -0.5f, -0.5f, 0.5f,
+                0.5f, -0.5f, 0.5f,
+                0.5f, -0.5f, -0.5f,
+                -0.5f, 0.5f, -0.5f,
+                -0.5f, 0.5f, 0.5f,
+                0.5f, 0.5f, 0.5f,
+                0.5f, 0.5f, -0.5f,
+                -0.5f, -0.5f, -0.5f,
+                -0.5f, 0.5f, -0.5f,
+                0.5f, 0.5f, -0.5f,
+                0.5f, -0.5f, -0.5f,
+                -0.5f, -0.5f, 0.5f,
+                -0.5f, 0.5f, 0.5f,
+                0.5f, 0.5f, 0.5f,
+                0.5f, -0.5f, 0.5f,
+                -0.5f, -0.5f, -0.5f,
+                -0.5f, -0.5f, 0.5f,
+                -0.5f, 0.5f, 0.5f,
+                -0.5f, 0.5f, -0.5f,
+                0.5f, -0.5f, -0.5f,
+                0.5f, -0.5f, 0.5f,
+                0.5f, 0.5f, 0.5f,
+                0.5f, 0.5f, -0.5f,
         };
 
         float[] cubeNormals = {0.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
@@ -139,20 +160,20 @@ public class ESShapes {
                 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
         };
 
-        float[] cubeTex = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-                1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-                1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-        };
+//        float[] cubeTex = {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+//                1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+//                0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+//                1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+//                1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+//        };
 
         // Allocate memory for buffers
         mVertices = ByteBuffer.allocateDirect(numVertices * 3 * 4)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mNormals = ByteBuffer.allocateDirect(numVertices * 3 * 4)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mTexCoords = ByteBuffer.allocateDirect(numVertices * 2 * 4)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+//        mNormals = ByteBuffer.allocateDirect(numVertices * 3 * 4)
+//                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+//        mTexCoords = ByteBuffer.allocateDirect(numVertices * 2 * 4)
+//                .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mIndices = ByteBuffer.allocateDirect(numIndices * 2)
                 .order(ByteOrder.nativeOrder()).asShortBuffer();
 
@@ -162,8 +183,8 @@ public class ESShapes {
             mVertices.put(i, mVertices.get(i) * scale);
         }
 
-        mNormals.put(cubeNormals).position(0);
-        mTexCoords.put(cubeTex).position(0);
+//        mNormals.put(cubeNormals).position(0);
+//        mTexCoords.put(cubeTex).position(0);
 
         short[] cubeIndices = {0, 2, 1, 0, 3, 2, 4, 5, 6, 4, 6, 7, 8, 9, 10,
                 8, 10, 11, 12, 15, 14, 12, 14, 13, 16, 17, 18, 16, 18, 19, 20,
