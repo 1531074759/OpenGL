@@ -9,21 +9,6 @@
 
 package com.particles.android;
 
-import static android.opengl.GLES20.GL_BLEND;
-import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
-import static android.opengl.GLES20.GL_ONE;
-import static android.opengl.GLES20.glBlendFunc;
-import static android.opengl.GLES20.glClear;
-import static android.opengl.GLES20.glClearColor;
-import static android.opengl.GLES20.glEnable;
-import static android.opengl.GLES20.glViewport;
-import static android.opengl.Matrix.multiplyMM;
-import static android.opengl.Matrix.setIdentityM;
-import static android.opengl.Matrix.translateM;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView.Renderer;
@@ -35,6 +20,21 @@ import com.particles.android.util.Geometry.Point;
 import com.particles.android.util.Geometry.Vector;
 import com.particles.android.util.MatrixHelper;
 import com.particles.android.util.TextureHelper;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+import static android.opengl.GLES20.GL_BLEND;
+import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES20.GL_ONE;
+import static android.opengl.GLES20.glBlendFunc;
+import static android.opengl.GLES20.glClear;
+import static android.opengl.GLES20.glClearColor;
+import static android.opengl.GLES20.glEnable;
+import static android.opengl.GLES20.glViewport;
+import static android.opengl.Matrix.multiplyMM;
+import static android.opengl.Matrix.setIdentityM;
+import static android.opengl.Matrix.translateM;
 
 public class ParticlesRenderer implements Renderer {
     private final Context context;
@@ -126,7 +126,7 @@ public class ParticlesRenderer implements Renderer {
 
         MatrixHelper.perspectiveM(projectionMatrix, 45, (float) width
             / (float) height, 1f, 10f);
-        
+
         setIdentityM(viewMatrix, 0);
         translateM(viewMatrix, 0, 0f, -1.5f, -5f);   
         multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0,

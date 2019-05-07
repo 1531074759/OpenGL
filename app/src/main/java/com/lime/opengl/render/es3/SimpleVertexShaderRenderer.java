@@ -38,22 +38,32 @@
 
 package com.lime.opengl.render.es3;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 import android.content.Context;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.os.SystemClock;
 
 import com.lime.common.Cube;
 import com.lime.common.ESShader;
-import com.lime.common.ESShapes;
 import com.lime.common.ESTransform;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 public class SimpleVertexShaderRenderer implements GLSurfaceView.Renderer {
 
     private Context mContext;
+
+    private final float[] projectionMatrix = new float[16];
+    private final float[] viewMatrix = new float[16];
+    private final float[] viewProjectionMatrix = new float[16];
+
+    private FloatBuffer mMatrixFloatBuffer;
 
     ///
     // Constructor
@@ -82,6 +92,8 @@ public class SimpleVertexShaderRenderer implements GLSurfaceView.Renderer {
         mAngle = 45.0f;
 
         GLES30.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+        mMatrixFloatBuffer = ByteBuffer.allocateDirect(16 * 4)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
     }
 
     private void update() {
@@ -94,8 +106,8 @@ public class SimpleVertexShaderRenderer implements GLSurfaceView.Renderer {
         float deltaTime = elapsedTime / 1000.0f;
         mLastTime = curTime;
 
-        ESTransform perspective = new ESTransform();
-        ESTransform modelview = new ESTransform();
+//        ESTransform perspective = new ESTransform();
+//        ESTransform modelview = new ESTransform();
         float aspect;
 
         // Compute a rotation angle based on time to rotate the cube
@@ -109,21 +121,30 @@ public class SimpleVertexShaderRenderer implements GLSurfaceView.Renderer {
         aspect = (float) mWidth / (float) mHeight;
 
         // Generate a perspective matrix with a 60 degree FOV
-        perspective.matrixLoadIdentity();
-        perspective.perspective(60.0f, aspect, 1.0f, 20.0f);
+//        perspective.matrixLoadIdentity();
+//        Matrix.setIdentityM(viewMatrix, 0);
+//        perspective.perspective(60.0f, aspect, 1.0f, 20.0f);
+        Matrix.perspectiveM(projectionMatrix, 0, 60.0f, aspect, 1.0f, 20.0f);
 
         // Generate a model view matrix to rotate/translate the cube
-        modelview.matrixLoadIdentity();
+//        modelview.matrixLoadIdentity();
+
+        Matrix.setIdentityM(viewMatrix, 0);
 
         // Translate away from the viewer
-        modelview.translate(0.0f, 0.0f, -2.0f);
+//        modelview.translate(0.0f, 0.0f, -2.0f);
+        Matrix.translateM(viewMatrix, 0, 0.0f, 0.0f, -2.0f);
 
         // Rotate the cube
-        modelview.rotate(mAngle, 1.0f, 0.0f, 1.0f);
+//        modelview.rotate(mAngle, 1.0f, 0.0f, 1.0f);
+        Matrix.rotateM(viewMatrix, 0, mAngle, 1.0f, 0.0f, 1.0f);
 
         // Compute the final MVP by multiplying the
         // modevleiw and perspective matrices together
-        mMVPMatrix.matrixMultiply(modelview.get(), perspective.get());
+//        mMVPMatrix.matrixMultiply(modelview.get(), perspective.get());
+        Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        mMatrixFloatBuffer.clear();
+        mMatrixFloatBuffer.put(viewProjectionMatrix).position(0);
     }
 
     ///
@@ -151,7 +172,7 @@ public class SimpleVertexShaderRenderer implements GLSurfaceView.Renderer {
 
         // Load the MVP matrix
         GLES30.glUniformMatrix4fv(mMVPLoc, 1, false,
-                mMVPMatrix.getAsFloatBuffer());
+                mMatrixFloatBuffer);
 
         // Draw the cube
         GLES30.glDrawElements(GLES30.GL_TRIANGLES, mCube.getNumIndices(),
