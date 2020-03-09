@@ -74,8 +74,7 @@ public class MipMap2DRenderer implements GLSurfaceView.Renderer {
     //  From an RGB8 source image, generate the next level mipmap
     //
     private byte[] genMipMap2D(byte[] src, int srcWidth, int srcHeight, int dstWidth, int dstHeight) {
-        int x,
-                y;
+        int x, y;
         int texelSize = 3;
 
         byte[] dst = new byte[texelSize * (dstWidth) * (dstHeight)];

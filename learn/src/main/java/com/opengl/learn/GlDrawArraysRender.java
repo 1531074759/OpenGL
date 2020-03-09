@@ -19,6 +19,8 @@ import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
 import static android.opengl.GLES20.GL_LINK_STATUS;
 import static android.opengl.GLES20.GL_TRIANGLES;
+import static android.opengl.GLES20.GL_TRIANGLE_FAN;
+import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
 import static android.opengl.GLES20.GL_VERTEX_SHADER;
 import static android.opengl.GLES20.glAttachShader;
 import static android.opengl.GLES20.glClear;
@@ -42,42 +44,74 @@ import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
 
-public class GlViewportRender implements GLSurfaceView.Renderer {
-    private static String TAG = GlViewportRender.class.getSimpleName();
-    private final float[] mVerticesData =
-            {0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                    0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f};
-
-    private final float[] mColorData =
+public class GlDrawArraysRender implements GLSurfaceView.Renderer {
+    private final float[] mVerticesTriangles =
             {
-                    1.0f, 0.0f, 0.0f, 1.0f,   // c0
-                    0.0f, 1.0f, 0.0f, 1.0f,   // c1
-                    0.0f, 0.0f, 1.0f, 1.0f    // c2
+                    0.0f, 0.0f, 0.0f, // v0
+                    0.0f, 0.5f, 0.0f, // v1
+                    -0.5f, 0.0f, 0.0f, // v2
+
+                    0.0f, 0.0f, 0.0f, // v0
+                    -0.5f, 0.0f, 0.0f, // v2
+                    -0.5f, -0.5f, 0.0f,  // v3
+
+                    0.0f, 0.0f, 0.0f, // v0
+                    -0.5f, -0.5f, 0.0f,  // v3
+                    0.5f, -0.5f, 0.0f,  // v4
+
+                    0.0f, 0.0f, 0.0f, // v0
+                    0.5f, -0.5f, 0.0f,  // v4
+                    0.5f, 0.0f, 0.0f,  // v5
+
+                    0.0f, 0.0f, 0.0f, // v0
+                    0.5f, 0.0f, 0.0f,  // v5
+                    0.0f, 0.5f, 0.0f // v1
             };
 
+    private final float[] mVerticesTrianglesStrip =
+            {
+                    0.0f, 0.0f, 0.0f, // v0
+                    0.0f, 0.5f, 0.0f, // v1
+                    -0.5f, 0.0f, 0.0f, // v2
+                    -0.5f, -0.5f, 0.0f,  // v3
+                    0.5f, -0.5f, 0.0f,  // v4
+                    0.5f, 0.0f, 0.0f,  // v5
+                    0.0f, 0.5f, 0.0f, // v1
+            };
+
+    private final float[] mVerticesTrianglesFan =
+            {
+                    0.0f, 0.0f, 0.0f, // v0
+                    0.0f, 0.5f, 0.0f, // v1
+                    -0.5f, 0.0f, 0.0f, // v2
+                    -0.5f, -0.5f, 0.0f,  // v3
+                    0.5f, -0.5f, 0.0f,  // v4
+                    0.5f, 0.0f, 0.0f,  // v5
+//                    0.0f, 0.5f, 0.0f, // v1
+            };
+
+    private static final String TAG = GlDrawArraysRender.class.getSimpleName();
     private static final int BYTES_PER_FLOAT = 4;
     private static final int POSITION_COMPONENT_SIZE = 3;
-    private static final int COLOR_COMPONENT_SIZE = 4;
-
     private Context mContext;
     private int mProgramObject;
-    private int mWidth;
-    private int mHeight;
-    private FloatBuffer mVertices, mColorVertices;
-    private int vPosition, vColor;
+    private int vPosition;
+    private FloatBuffer mVertices, mVerticesStrip, mVerticesFan;
+    private int mWidth, mHeight;
 
-    private static final int STRIDE =
-            (POSITION_COMPONENT_SIZE + COLOR_COMPONENT_SIZE) * BYTES_PER_FLOAT;
-
-    public GlViewportRender(Context context) {
+    public GlDrawArraysRender(Context context) {
         mContext = context;
-        mVertices = ByteBuffer.allocateDirect(mVerticesData.length * 4)
+        mVertices = ByteBuffer.allocateDirect(mVerticesTriangles.length * BYTES_PER_FLOAT)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mVertices.put(mVerticesData).position(0);
-        mColorVertices = ByteBuffer.allocateDirect(mColorData.length * 4)
+        mVertices.put(mVerticesTriangles).position(0);
+
+        mVerticesStrip = ByteBuffer.allocateDirect(mVerticesTrianglesStrip.length * BYTES_PER_FLOAT)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mColorVertices.put(mColorData).position(0);
+        mVerticesStrip.put(mVerticesTrianglesStrip).position(0);
+
+        mVerticesFan = ByteBuffer.allocateDirect(mVerticesTrianglesFan.length * BYTES_PER_FLOAT)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mVerticesFan.put(mVerticesTrianglesFan).position(0);
     }
 
     @Override
@@ -93,42 +127,14 @@ public class GlViewportRender implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        drawShape();
-    }
-
-    private void drawShape() {
-        // Clear the color buffer
-        for (int i = 0; i < 4; i++) {
-            glClear(GL_COLOR_BUFFER_BIT);
-            if (i == 0) {
-                glViewport(0, mHeight / 2, mWidth / 2, mHeight / 2);
-            } else if (i == 1) {
-                glViewport(mWidth / 2, mHeight / 2, mWidth / 2, mHeight / 2);
-            } else if (i == 2) {
-                glViewport(0, 0, mWidth / 2, mHeight / 2);
-            } else if (i == 3) {
-                glViewport(mWidth / 2, 0, mWidth / 2, mHeight / 2);
-            }
-
-            // Use the program object
-            glUseProgram(mProgramObject);
-
-            mVertices.position(0);
-            // Load the vertex data
-            glVertexAttribPointer(vPosition, 3, GL_FLOAT, false, STRIDE, mVertices);
-            glEnableVertexAttribArray(vPosition);
-
-            mVertices.position(POSITION_COMPONENT_SIZE);
-            glVertexAttribPointer(vColor, 4, GL_FLOAT, false, STRIDE, mVertices);
-            glEnableVertexAttribArray(vColor);
-
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-        }
+//        drawShape(GL_TRIANGLES);
+//        drawShape(GL_TRIANGLE_STRIP);
+        drawShape(GL_TRIANGLE_FAN);
     }
 
     private void loadProgram() {
-        String vShaderStr = ESShader.readShader(mContext, "viewport_vertexShader.glsl");
-        String fShaderStr = ESShader.readShader(mContext, "viewport_fragmentShader.glsl");
+        String vShaderStr = ESShader.readShader(mContext, "drawarrays_vertexShader.glsl");
+        String fShaderStr = ESShader.readShader(mContext, "drawarrays_fragmentShader.glsl");
         int vertexShader;
         int fragmentShader;
         int programObject;
@@ -164,9 +170,8 @@ public class GlViewportRender implements GLSurfaceView.Renderer {
         mProgramObject = programObject;
         glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
         vPosition = glGetAttribLocation(mProgramObject, "vPosition");
-        vColor = glGetAttribLocation(mProgramObject, "vColor");
 
-        Log.i(TAG, "vPosition: " + vPosition + ", vColor: " + vColor);
+        Log.i(TAG, "vPosition: " + vPosition);
     }
 
     private int loadShader(int type, String shaderSrc) {
@@ -197,5 +202,36 @@ public class GlViewportRender implements GLSurfaceView.Renderer {
         }
         Log.i(TAG, "load " + type + " shader result: " + shader);
         return shader;
+    }
+
+    private void drawShape(int type) {
+        // Clear the color buffer
+        glClear(GL_COLOR_BUFFER_BIT);
+        glViewport(0, 0, mWidth, mHeight);
+
+        // Use the program object
+        glUseProgram(mProgramObject);
+
+        if (GL_TRIANGLES == type) {
+            mVertices.position(0);
+            // Load the vertex data
+            glVertexAttribPointer(vPosition, POSITION_COMPONENT_SIZE, GL_FLOAT, false, 0, mVertices);
+            glEnableVertexAttribArray(vPosition);
+            glDrawArrays(type, 0, 15);
+        } else if (GL_TRIANGLE_STRIP == type) {
+            mVertices.position(0);
+            // Load the vertex data
+            glVertexAttribPointer(vPosition, POSITION_COMPONENT_SIZE, GL_FLOAT, false, 0, mVerticesStrip);
+            glEnableVertexAttribArray(vPosition);
+            glDrawArrays(type, 0, 7);
+        } else if (GL_TRIANGLE_FAN == type) {
+            mVertices.position(0);
+            // Load the vertex data
+            glVertexAttribPointer(vPosition, POSITION_COMPONENT_SIZE, GL_FLOAT, false, 0, mVerticesFan);
+            glEnableVertexAttribArray(vPosition);
+            glDrawArrays(type, 0, 6);
+        }
+
+        glEnableVertexAttribArray(vPosition);
     }
 }

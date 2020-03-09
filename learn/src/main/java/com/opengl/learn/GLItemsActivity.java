@@ -24,6 +24,8 @@ public class GLItemsActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(GLItemsActivity.this, LinearLayoutManager.VERTICAL));
         List<String> items = new ArrayList<>();
         items.add(GlViewportRender.class.getName());
+        items.add(GlDrawArraysRender.class.getName());
+        items.add(GlBindBufferRender.class.getName());
         adapter = new RecycleAdapter(GLItemsActivity.this, items);
         recyclerView.setAdapter(adapter);
     }
