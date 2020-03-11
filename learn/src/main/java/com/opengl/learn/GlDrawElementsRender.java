@@ -16,26 +16,46 @@ import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES20.GL_COMPILE_STATUS;
 import static android.opengl.GLES20.GL_ELEMENT_ARRAY_BUFFER;
 import static android.opengl.GLES20.GL_FLOAT;
+import static android.opengl.GLES20.GL_FRAGMENT_SHADER;
+import static android.opengl.GLES20.GL_LINK_STATUS;
 import static android.opengl.GLES20.GL_STATIC_DRAW;
 import static android.opengl.GLES20.GL_TRIANGLES;
+import static android.opengl.GLES20.GL_TRIANGLE_FAN;
+import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
 import static android.opengl.GLES20.GL_UNSIGNED_SHORT;
+import static android.opengl.GLES20.GL_VERTEX_SHADER;
+import static android.opengl.GLES20.glAttachShader;
 import static android.opengl.GLES20.glBindBuffer;
 import static android.opengl.GLES20.glBufferData;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
+import static android.opengl.GLES20.glCompileShader;
+import static android.opengl.GLES20.glCreateProgram;
+import static android.opengl.GLES20.glCreateShader;
+import static android.opengl.GLES20.glDeleteProgram;
+import static android.opengl.GLES20.glDeleteShader;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
+import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glDrawElements;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGenBuffers;
 import static android.opengl.GLES20.glGetAttribLocation;
+import static android.opengl.GLES20.glGetError;
+import static android.opengl.GLES20.glGetProgramInfoLog;
+import static android.opengl.GLES20.glGetProgramiv;
+import static android.opengl.GLES20.glGetShaderInfoLog;
+import static android.opengl.GLES20.glGetShaderiv;
+import static android.opengl.GLES20.glLinkProgram;
+import static android.opengl.GLES20.glShaderSource;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
 
-public class GlBindBufferRender implements GLSurfaceView.Renderer {
-    private static final String TAG = GlBindBufferRender.class.getSimpleName();
+public class GlDrawElementsRender implements GLSurfaceView.Renderer {
+    private static final String TAG = GlDrawElementsRender.class.getSimpleName();
     private Context mContext;
     private int mProgramObject;
 
@@ -85,7 +105,7 @@ public class GlBindBufferRender implements GLSurfaceView.Renderer {
     // VertexBufferObject Ids
     private int[] mVBOIds = new int[3];
 
-    public GlBindBufferRender(Context context) {
+    public GlDrawElementsRender(Context context) {
         mContext = context;
         mVertices = ByteBuffer.allocateDirect(mVerticesData.length * BYTES_PER_FLOAT)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -100,11 +120,10 @@ public class GlBindBufferRender implements GLSurfaceView.Renderer {
         mIndices.put(mIndicesData).position(0);
     }
 
-
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        String vShaderStr = ESShader.readShader(mContext, "bindbuffer_vertexShader.glsl");
-        String fShaderStr = ESShader.readShader(mContext, "bindbuffer_fragmentShader.glsl");
+        String vShaderStr = ESShader.readShader(mContext, "drawelements_vertexShader.glsl");
+        String fShaderStr = ESShader.readShader(mContext, "drawelements_fragmentShader.glsl");
 
         // Load the shaders and get a linked program object
         mProgramObject = ESShader.loadProgram(vShaderStr, fShaderStr);
@@ -170,3 +189,4 @@ public class GlBindBufferRender implements GLSurfaceView.Renderer {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 }
+
