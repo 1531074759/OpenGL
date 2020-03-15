@@ -1,0 +1,20 @@
+Executable : D:\Android\Sdk\cmake\3.10.2.4988404\bin\cmake.exe
+arguments : 
+-HD:\Project\workstudio\OpenGL\app\src\main\cpp
+-DCMAKE_BUILD_TYPE=Debug
+-DCMAKE_TOOLCHAIN_FILE=D:\Android\Sdk\ndk-bundle\build\cmake\android.toolchain.cmake
+-DANDROID_ABI=armeabi-v7a
+-DANDROID_NDK=D:\Android\Sdk\ndk-bundle
+-DANDROID_PLATFORM=android-26
+-DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a
+-DCMAKE_ANDROID_NDK=D:\Android\Sdk\ndk-bundle
+-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=D:\Project\workstudio\OpenGL\app\build\intermediates\cmake\debug\obj\armeabi-v7a
+-DCMAKE_MAKE_PROGRAM=D:\Android\Sdk\cmake\3.10.2.4988404\bin\ninja.exe
+-DCMAKE_SYSTEM_NAME=Android
+-DCMAKE_SYSTEM_VERSION=26
+-BD:\Project\workstudio\OpenGL\app\.cxx\cmake\debug\armeabi-v7a
+-GNinja
+jvmArgs : 
+
+Build command args:

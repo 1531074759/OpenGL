@@ -1,0 +1,4 @@
+# ninja log v5
+1	60	605984664	CMakeFiles/native.dir/GraphicBufferEx.cpp.o	7552df4517ef34ed
+0	601	605984664	CMakeFiles/native.dir/native.cpp.o	7d61daa5d35d6c24
+603	680	605984664	D:/Project/workstudio/OpenGL/app/build/intermediates/cmake/debug/obj/armeabi-v7a/libnative.so	a881bc92f12daf7a

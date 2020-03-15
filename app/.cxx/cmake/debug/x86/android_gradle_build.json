@@ -1,0 +1,47 @@
+{
+  "stringTable": {
+    "0": "D:/Project/workstudio/OpenGL/app/.cxx/cmake/debug/x86",
+    "1": "--target=i686-none-linux-android26 --gcc-toolchain=D:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=D:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot -Dnative_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIC"
+  },
+  "buildFiles": [
+    "D:\\Android\\Sdk\\ndk-bundle\\build\\cmake\\android.toolchain.cmake",
+    "D:\\Android\\Sdk\\ndk-bundle\\build\\cmake\\platforms.cmake",
+    "D:\\Project\\workstudio\\OpenGL\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "D:\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\Project\\workstudio\\OpenGL\\app\\.cxx\\cmake\\debug\\x86\" clean"
+  ],
+  "buildTargetsCommand": "D:\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe  -C \"D:\\Project\\workstudio\\OpenGL\\app\\.cxx\\cmake\\debug\\x86\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "native-Debug-x86": {
+      "buildCommand": "D:\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\Project\\workstudio\\OpenGL\\app\\.cxx\\cmake\\debug\\x86\" native",
+      "buildType": "debug",
+      "toolchain": "1240080042",
+      "abi": "x86",
+      "artifactName": "native",
+      "files": [
+        {
+          "src": "D:\\Project\\workstudio\\OpenGL\\app\\src\\main\\cpp\\native.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        },
+        {
+          "src": "D:\\Project\\workstudio\\OpenGL\\app\\src\\main\\cpp\\GraphicBufferEx.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "headers": [],
+      "output": "D:\\Project\\workstudio\\OpenGL\\app\\build\\intermediates\\cmake\\debug\\obj\\x86\\libnative.so"
+    }
+  },
+  "toolchains": {
+    "1240080042": {
+      "cppCompilerExecutable": "D:\\Android\\Sdk\\ndk-bundle\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

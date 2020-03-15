@@ -1,0 +1,19 @@
+{
+  "buildFiles": [
+    "D:\\Android\\Sdk\\ndk-bundle\\build\\cmake\\android.toolchain.cmake",
+    "D:\\Android\\Sdk\\ndk-bundle\\build\\cmake\\platforms.cmake",
+    "D:\\Project\\workstudio\\OpenGL\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "D:\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\Project\\workstudio\\OpenGL\\app\\.cxx\\cmake\\debug\\x86_64\" clean"
+  ],
+  "buildTargetsCommand": "D:\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe  -C \"D:\\Project\\workstudio\\OpenGL\\app\\.cxx\\cmake\\debug\\x86_64\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "native-Debug-x86_64": {
+      "artifactName": "native",
+      "buildCommand": "D:\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\Project\\workstudio\\OpenGL\\app\\.cxx\\cmake\\debug\\x86_64\" native",
+      "abi": "x86_64",
+      "output": "D:\\Project\\workstudio\\OpenGL\\app\\build\\intermediates\\cmake\\debug\\obj\\x86_64\\libnative.so"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "buildFiles": [
+    "D:\\Android\\Sdk\\ndk-bundle\\build\\cmake\\android.toolchain.cmake",
+    "D:\\Android\\Sdk\\ndk-bundle\\build\\cmake\\platforms.cmake",
+    "D:\\Project\\workstudio\\OpenGL\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "D:\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\Project\\workstudio\\OpenGL\\app\\.cxx\\cmake\\release\\armeabi-v7a\" clean"
+  ],
+  "buildTargetsCommand": "D:\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe  -C \"D:\\Project\\workstudio\\OpenGL\\app\\.cxx\\cmake\\release\\armeabi-v7a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "native-Release-armeabi-v7a": {
+      "artifactName": "native",
+      "buildCommand": "D:\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\Project\\workstudio\\OpenGL\\app\\.cxx\\cmake\\release\\armeabi-v7a\" native",
+      "abi": "armeabi-v7a",
+      "output": "D:\\Project\\workstudio\\OpenGL\\app\\build\\intermediates\\cmake\\release\\obj\\armeabi-v7a\\libnative.so"
+    }
+  }
+}

@@ -26,6 +26,7 @@ public class GLItemsActivity extends AppCompatActivity {
         items.add(GlViewportRender.class.getName());
         items.add(GlDrawArraysRender.class.getName());
         items.add(GlDrawElementsRender.class.getName());
+        items.add(GlActiveTextureRender.class.getName());
         adapter = new RecycleAdapter(GLItemsActivity.this, items);
         recyclerView.setAdapter(adapter);
     }

@@ -1,0 +1,3 @@
+D:/Project/workstudio/OpenGL/app/.cxx/cmake/debug/x86/CMakeFiles/native.dir
+D:/Project/workstudio/OpenGL/app/.cxx/cmake/debug/x86/CMakeFiles/edit_cache.dir
+D:/Project/workstudio/OpenGL/app/.cxx/cmake/debug/x86/CMakeFiles/rebuild_cache.dir

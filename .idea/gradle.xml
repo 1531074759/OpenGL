@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <compositeConfiguration>
-          <compositeBuild compositeDefinitionSource="SCRIPT" />
-        </compositeConfiguration>
+        <option name="testRunner" value="PLATFORM" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
@@ -17,11 +16,13 @@
             <option value="$PROJECT_DIR$/common" />
             <option value="$PROJECT_DIR$/firstopenglproject" />
             <option value="$PROJECT_DIR$/heightmap" />
+            <option value="$PROJECT_DIR$/learn" />
             <option value="$PROJECT_DIR$/lighting" />
             <option value="$PROJECT_DIR$/livewallpaper" />
             <option value="$PROJECT_DIR$/particles" />
             <option value="$PROJECT_DIR$/skybox" />
             <option value="$PROJECT_DIR$/takingthenextstep" />
+            <option value="$PROJECT_DIR$/watermark" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

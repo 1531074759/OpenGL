@@ -1,0 +1,13 @@
+[
+{
+  "directory": "D:/Project/workstudio/OpenGL/app/.cxx/cmake/release/x86",
+  "command": "D:\\Android\\Sdk\\ndk-bundle\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android26 --gcc-toolchain=D:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=D:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Dnative_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security   -O2 -DNDEBUG  -fPIC   -o CMakeFiles\\native.dir\\native.cpp.o -c D:\\Project\\workstudio\\OpenGL\\app\\src\\main\\cpp\\native.cpp",
+  "file": "D:\\Project\\workstudio\\OpenGL\\app\\src\\main\\cpp\\native.cpp"
+},
+
+{
+  "directory": "D:/Project/workstudio/OpenGL/app/.cxx/cmake/release/x86",
+  "command": "D:\\Android\\Sdk\\ndk-bundle\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe --target=i686-none-linux-android26 --gcc-toolchain=D:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=D:/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -Dnative_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security   -O2 -DNDEBUG  -fPIC   -o CMakeFiles\\native.dir\\GraphicBufferEx.cpp.o -c D:\\Project\\workstudio\\OpenGL\\app\\src\\main\\cpp\\GraphicBufferEx.cpp",
+  "file": "D:\\Project\\workstudio\\OpenGL\\app\\src\\main\\cpp\\GraphicBufferEx.cpp"
+}
+]
