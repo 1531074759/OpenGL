@@ -1,18 +1,17 @@
-package com.opengl.learn;
+package com.opengl.learn.blend;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 import com.lime.common.ESShader;
 import com.lime.common.TextureHelper;
+import com.opengl.learn.R;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
-import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import static android.opengl.GLES20.GL_ARRAY_BUFFER;
@@ -41,18 +40,18 @@ import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static android.opengl.GLES20.glViewport;
 
-public class GlActiveTextureRender implements GLSurfaceView.Renderer {
-    private static final String TAG = GlActiveTextureRender.class.getSimpleName();
+public class Map {
+    private static final String TAG = Map.class.getSimpleName();
     private static final int BYTES_PER_FLOAT = 4;
     private static final int BYTES_PER_SHORT = 2;
     private static final int POSITION_COMPONENT_SIZE = 3;
     private static final int COLOR_COMPONENT_SIZE = 4;
     private final float[] mVerticesData =
             {
-                    -1.0f, 0.5f, 0.0f, // v0
-                    -1.0f, -0.5f, 0.0f, // v1
-                    1.0f, -0.5f, 0.0f,  // v2
-                    1.0f, 0.5f, 0.0f,  // v3
+                    -1.0f, 1.0f, 0.0f, // v0
+                    -1.0f, -1.0f, 0.0f, // v1
+                    1.0f, -1.0f, 0.0f,  // v2
+                    1.0f, 1.0f, 0.0f,  // v3
             };
 
     private final short[] mIndicesData =
@@ -78,18 +77,19 @@ public class GlActiveTextureRender implements GLSurfaceView.Renderer {
             };
 
     private Context mContext;
-    private int mProgramObject;
+    private int mProgramObject, mBlendProgram;
     private int mWidth, mHeight;
     private FloatBuffer mVertices;
     private FloatBuffer mColors;
     private FloatBuffer mTextureBuffer;
     private ShortBuffer mIndices;
     private int aPosition, aColor, aTexturePosition;
+
     private int[] mVBOIds = new int[4];
     private int mTexture;
     private int mTextureUniform;
 
-    public GlActiveTextureRender(Context context) {
+    public Map(Context context) {
         mContext = context;
         mVertices = ByteBuffer.allocateDirect(mVerticesData.length * BYTES_PER_FLOAT)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -108,15 +108,17 @@ public class GlActiveTextureRender implements GLSurfaceView.Renderer {
         mIndices.put(mIndicesData).position(0);
     }
 
-    @Override
-    public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+    public void onSurfaceCreated() {
+        loadMap();
+    }
+
+    private void loadMap() {
         String vShaderStr = ESShader.readShader(mContext, "activetexture_vertexShader.glsl");
         String fShaderStr = ESShader.readShader(mContext, "activetexture_fragmentShader.glsl");
 
         // Load the shaders and get a linked program object
         mProgramObject = ESShader.loadProgram(vShaderStr, fShaderStr);
 
-        glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
         aPosition = glGetAttribLocation(mProgramObject, "aPosition");
         aColor = glGetAttribLocation(mProgramObject, "aColor");
         aTexturePosition = glGetAttribLocation(mProgramObject, "aTexturePosition");
@@ -150,21 +152,18 @@ public class GlActiveTextureRender implements GLSurfaceView.Renderer {
         mTexture = TextureHelper.loadTexture(mContext, R.mipmap.world);
     }
 
-    @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         mWidth = width;
         mHeight = height;
     }
 
-    @Override
-    public void onDrawFrame(GL10 gl) {
+    public void onDrawFrame() {
         glViewport(0, 0, mWidth, mHeight);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(mProgramObject);
-        drawWatermark();
+        drawMap();
     }
 
-    private void drawWatermark() {
+    private void drawMap() {
+        glUseProgram(mProgramObject);
         glBindBuffer(GL_ARRAY_BUFFER, mVBOIds[0]);
         glEnableVertexAttribArray(aPosition);
         glVertexAttribPointer(aPosition, POSITION_COMPONENT_SIZE,
