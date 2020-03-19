@@ -29,7 +29,6 @@ import static android.opengl.GLES20.glBindBuffer;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glBlendFunc;
 import static android.opengl.GLES20.glBufferData;
-import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glDisable;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawElements;
