@@ -9,9 +9,14 @@ import com.opengl.learn.blend.Watermark;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import static android.opengl.GLES20.GL_BLEND;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES20.GL_ONE;
+import static android.opengl.GLES20.glBlendFunc;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
+import static android.opengl.GLES20.glDisable;
+import static android.opengl.GLES20.glEnable;
 
 public class GlBlendFuncRender implements GLSurfaceView.Renderer {
     private static final String TAG = GlBlendFuncRender.class.getSimpleName();
@@ -41,6 +46,9 @@ public class GlBlendFuncRender implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         glClear(GL_COLOR_BUFFER_BIT);
         mMap.onDrawFrame();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
         mWatermark.onDrawFrame();
+        glDisable(GL_BLEND);
     }
 }

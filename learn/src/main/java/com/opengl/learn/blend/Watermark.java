@@ -139,10 +139,7 @@ public class Watermark {
 
     public void onDrawFrame() {
         glViewport(0, 0, 288, 144);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
         drawWatermark();
-        glDisable(GL_BLEND);
     }
 
     private void drawWatermark() {
